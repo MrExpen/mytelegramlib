@@ -68,6 +68,9 @@ class TelegramBot:
         self.functions.append({'func': func, 'types': content_type})
         return func
 
+    class osMessage:
+        
+
 class ReplyKeyboardMarkup:
     def __init__(self, resize_keyboard=False, one_time_keyboard=False, **kwargs):
         self.object = {
