@@ -3,6 +3,8 @@
 pip install requests
 ```
 
+
+Quick start
 ```python
 from mytelegramlib import *
 
