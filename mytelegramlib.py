@@ -64,11 +64,11 @@ class TelegramBot:
                 if event['type'] in func['types']:
                     func['func'](event)
 
-    def osMessage(self, func, content_type=['text', 'sticker', 'document', 'photo', 'voice', 'audio', 'location', 'poll', 'contact', 'video_note', 'video', 'forward_message', 'reply_to_message', 'dice', 'edit_message', 'callback_query', 'unknown']):
-        self.functions.append({'func': func, 'types': content_type})
-        return func
-
-    class osMessage:
+    def osMessage(self, content_type=['text', 'sticker', 'document', 'photo', 'voice', 'audio', 'location', 'poll', 'contact', 'video_note', 'video', 'forward_message', 'reply_to_message', 'dice', 'edit_message', 'callback_query', 'unknown']):
+        def decorator(func):
+            self.functions.append({'func': func, 'types': content_type})
+            return func
+        return decorator
         
 
 class ReplyKeyboardMarkup:
