@@ -4,7 +4,7 @@ pip install requests
 ```
 
 
-Quick start
+Simple echo bot
 ```python
 from mytelegramlib import *
 
