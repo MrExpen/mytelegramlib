@@ -5,6 +5,7 @@ import json
 class TelegramBot:
     def __init__(self, token: str, based_url='https://telegg.ru/orig'):
         self.URl = f'{based_url}/bot{token}/'
+        self.functions = []
 
     def method(self, name: str, params=None):
         response = requests.get(self.URl + name, params=params)
@@ -45,7 +46,7 @@ class TelegramBot:
                 return 'video_note'
             elif event['message'].get('video'):
                 return 'video'
-            elif event['message'].get('forward_from'):
+            elif event['message'].get('forward_message'):
                 return 'forward_from'
             elif event['message'].get('reply_to_message'):
                 return 'reply_to_message'
@@ -55,8 +56,13 @@ class TelegramBot:
             return 'edit_message'
         elif event.get('callback_query'):
             return 'callback_query'
-
         return 'unknown'
+
+    def polling(self):
+        pass
+
+    def osMessage(self, func, content_type=['text', 'sticker', 'document', 'photo', 'voice', 'audio', 'location', 'poll', 'contact', 'video_note', 'video', 'forward_message', 'reply_to_message', 'dice', 'edit_message', 'callback_query', 'unknown']):
+        self.functions.append({'finc': func, 'content_type': content_type})
 
 
 class ReplyKeyboardMarkup:
@@ -78,7 +84,7 @@ class ReplyKeyboardMarkup:
         self.object['keyboard'].append([])
 
     def __str__(self):
-        return json.dumps(self.object)
+        return str(self.object)
 
 
 class InlineKeyboardMarkup:
@@ -100,4 +106,4 @@ class InlineKeyboardMarkup:
         self.object['inline_keyboard'].append([])
 
     def __str__(self):
-        return json.dumps(self.object)
+        return str(self.object)
