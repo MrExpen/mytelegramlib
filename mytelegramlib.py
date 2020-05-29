@@ -59,11 +59,14 @@ class TelegramBot:
         return 'unknown'
 
     def polling(self):
-        pass
+        for event in self.getUpdates():
+            for func in self.functions:
+                if event['type'] in func['types']:
+                    func['func'](event)
 
     def osMessage(self, func, content_type=['text', 'sticker', 'document', 'photo', 'voice', 'audio', 'location', 'poll', 'contact', 'video_note', 'video', 'forward_message', 'reply_to_message', 'dice', 'edit_message', 'callback_query', 'unknown']):
-        self.functions.append({'finc': func, 'content_type': content_type})
-
+        self.functions.append({'func': func, 'types': content_type})
+        return func
 
 class ReplyKeyboardMarkup:
     def __init__(self, resize_keyboard=False, one_time_keyboard=False, **kwargs):
