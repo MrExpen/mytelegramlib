@@ -61,10 +61,10 @@ class TelegramBot:
     def polling(self):
         for event in self.getUpdates():
             for func in self.functions:
-                if event['type'] in func['types']:
+                if event['type'] in func['types'] or 'any' in func['types']:
                     func['func'](event)
 
-    def osMessage(self, content_type=['text', 'sticker', 'document', 'photo', 'voice', 'audio', 'location', 'poll', 'contact', 'video_note', 'video', 'forward_message', 'reply_to_message', 'dice', 'edit_message', 'callback_query', 'unknown']):
+    def osMessage(self, content_type=['any']):
         def decorator(func):
             self.functions.append({'func': func, 'types': content_type})
             return func
