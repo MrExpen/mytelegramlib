@@ -67,18 +67,24 @@ class TelegramBot:
         return commands
 
     def polling(self):
+        breakFlag = False
         for event in self.getUpdates():
             for func in self.functions:
-                if event['type'] in func['types'] or 'any' in func['types']:
-                    func['func'](event)
-                elif event['type'] == 'text':
+                if event['type'] == 'callback_query':
+                    if event['callback_query']['data'] in func['callback_datas']:
+                        func['func'](event)
+                        break
+                if event['type'] == 'text':
                     if not self.getCommands(event).isdisjoint(func['commands']):
                         func['func'](event)
-                
+                        break
+                if event['type'] in func['types'] or 'any' in func['types']:
+                    func['func'](event)
+                    break
 
-    def onMessage(self, content_type=[], commands=[]):
+    def eventHendler(self, content_types=[], commands=[], callback_datas=[]):
         def decorator(func):
-            self.functions.append({'func': func, 'types': content_type, 'commands':set(commands)})
+            self.functions.append({'func': func, 'types': content_types, 'commands':set(commands), 'callback_datas': callback_datas})
             return func
         return decorator
 
