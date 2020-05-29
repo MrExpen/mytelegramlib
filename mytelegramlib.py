@@ -24,7 +24,11 @@ class TelegramBot:
 
     def getEventType(self, event):
         if event.get('message'):
-            if event['message'].get('text'):
+            if event['message'].get('forward_message'):
+                return 'forward_from'
+            elif event['message'].get('reply_to_message'):
+                return 'reply_to_message'
+            elif event['message'].get('text'):
                 return 'text'
             elif event['message'].get('sticker'):
                 return 'sticker'
@@ -46,10 +50,6 @@ class TelegramBot:
                 return 'video_note'
             elif event['message'].get('video'):
                 return 'video'
-            elif event['message'].get('forward_message'):
-                return 'forward_from'
-            elif event['message'].get('reply_to_message'):
-                return 'reply_to_message'
             elif event['message'].get('dice'):
                 return 'dice'
         elif event.get('edited_message'):
