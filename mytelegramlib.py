@@ -49,10 +49,14 @@ class TelegramBot:
                 return 'forward_from'
             elif event['message'].get('reply_to_message'):
                 return 'reply_to_message'
+            elif event['message'].get('dice'):
+                return 'dice'
         elif event.get('edited_message'):
             return 'edit_message'
-        else:
-            return 'unknown'
+        elif event.get('callback_query'):
+            return 'callback_query'
+
+        return 'unknown'
 
 
 class ReplyKeyboardMarkup:
