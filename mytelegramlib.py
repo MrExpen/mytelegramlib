@@ -18,11 +18,11 @@ class TelegramBot:
         last_update = 0
         while True:
             for event in self.method('getUpdates', {'offset': last_update, 'count': 1}):
-                event['type'] = self.get_event_type(event)
+                event['type'] = self.getEventType(event)
                 yield event
                 last_update = event['update_id'] + 1
 
-    def get_event_type(self, event):
+    def getEventType(self, event):
         if event.get('message'):
             if event['message'].get('text'):
                 return 'text'
@@ -58,18 +58,30 @@ class TelegramBot:
             return 'callback_query'
         return 'unknown'
 
+    def getCommands(self, event):
+        commands = set()
+        if event['message'].get('entities'):
+            for entiti in event['message']['entities']:
+                if entiti['type'] == 'bot_command':
+                    commands.add(event['message']['text'][entiti['offset']+1:entiti['offset'] + entiti['length']])
+        return commands
+
     def polling(self):
         for event in self.getUpdates():
             for func in self.functions:
                 if event['type'] in func['types'] or 'any' in func['types']:
                     func['func'](event)
+                elif event['type'] == 'text':
+                    if not self.getCommands(event).isdisjoint(func['commands']):
+                        func['func'](event)
+                
 
-    def osMessage(self, content_type=['any']):
+    def onMessage(self, content_type=[], commands=[]):
         def decorator(func):
-            self.functions.append({'func': func, 'types': content_type})
+            self.functions.append({'func': func, 'types': content_type, 'commands':set(commands)})
             return func
         return decorator
-        
+
 
 class ReplyKeyboardMarkup:
     def __init__(self, resize_keyboard=False, one_time_keyboard=False, **kwargs):
