@@ -1,23 +1,40 @@
 import requests
 import json
+import time
+# from requests import exception
 
 
 class TelegramBot:
     def __init__(self, token: str, based_url='https://telegg.ru/orig'):
-        self.URl = f'{based_url}/bot{token}/'
+        self.TOKEN = f'bot{token}/'
+        self.URl = f'{based_url}/'
         self.functions = []
 
     def method(self, name: str, params=None):
-        response = requests.get(self.URl + name, params=params)
-        if response.json()['ok']:
-            return response.json()['result']
-        print(response.json())
-        raise Exception('server return a non "ok" status')
+        try:
+            response = requests.get(self.URl + self.TOKEN + name, params=params)
+            if response.json()['ok']:
+                return response.json()['result']
+            print(response.json())
+            raise Exception('server return a non "ok" status')
+        except requests.exceptions.ConnectionError as e:
+            print(e)
+            time.sleep(3)
+            self.method(name, params)
+
+    def downloadFile(self, file_id, file_name):
+        file = self.method('getFile', {
+            'file_id': file_id
+        })
+        file = file['file_path']
+        response = requests.get(self.URl + 'file/' + self.TOKEN + file)
+        with open(file_name, 'wb') as fout:
+            fout.write(response.content)
 
     def getUpdates(self):
         last_update = 0
         while True:
-            for event in self.method('getUpdates', {'offset': last_update, 'count': 1}):
+            for event in self.method('getUpdates', {'offset': last_update}):
                 event['type'] = self.getEventType(event)
                 yield event
                 last_update = event['update_id'] + 1
@@ -71,9 +88,10 @@ class TelegramBot:
         for event in self.getUpdates():
             for func in self.functions:
                 if event['type'] == 'callback_query':
-                    if event['callback_query']['data'] in func['callback_datas']:
+                    if event['callback_query']['data'] in func['callback_datas'] or 'any' in func['callback_datas']:
                         func['func'](event)
                         break
+                    continue
                 if event['type'] == 'text':
                     if not self.getCommands(event).isdisjoint(func['commands']):
                         func['func'](event)
@@ -98,7 +116,7 @@ class ReplyKeyboardMarkup:
             'keyboard': [[]]
         }
 
-    def getKeyboard(self):
+    def getMarkup(self):
         return json.dumps(self.object)
 
     def addButton(self, text, **kwargs):
@@ -110,12 +128,14 @@ class ReplyKeyboardMarkup:
     def __str__(self):
         return str(self.object)
 
+    def clearMarkup(self):
+        self.object['keyboard'] = [[]]
 
 class InlineKeyboardMarkup:
     def __init__(self):
         self.object = {'inline_keyboard': [[]]}
 
-    def getKeyboard(self):
+    def getMarkup(self):
         return json.dumps(self.object)
 
     def addButton(self, text, callback_data='', url='', **kwargs):
@@ -131,3 +151,26 @@ class InlineKeyboardMarkup:
 
     def __str__(self):
         return str(self.object)
+
+    def clearMarkup(self):
+        self.object['inline_keyboard'] = [[]]
+
+class MarkupContainer:
+    def __init__(self, **kwargs):
+        self.object = kwargs
+
+    def addMarkup(self, **kwargs):
+        self.object = {
+            **self.object,
+            **kwargs
+        }
+
+    def getMarkup(self):
+        return json.dumps(self.object)
+
+    def clearMarkup(self):
+        self.object = {}
+
+    def __str__(self):
+        return str(self.object)
+
