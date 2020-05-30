@@ -84,7 +84,6 @@ class TelegramBot:
         return commands
 
     def polling(self):
-        breakFlag = False
         for event in self.getUpdates():
             for func in self.functions:
                 if event['type'] == 'callback_query':
@@ -93,7 +92,7 @@ class TelegramBot:
                         break
                     continue
                 if event['type'] == 'text':
-                    if not self.getCommands(event).isdisjoint(func['commands']):
+                    if not self.getCommands(event).isdisjoint(func['commands']) or 'any' in func['commands']:
                         func['func'](event)
                         break
                 if event['type'] in func['types'] or 'any' in func['types']:
