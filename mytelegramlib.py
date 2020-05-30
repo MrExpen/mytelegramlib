@@ -92,7 +92,7 @@ class TelegramBot:
                         break
                     continue
                 if event['type'] == 'text':
-                    if not self.getCommands(event).isdisjoint(func['commands']) or 'any' in func['commands']:
+                    if not self.getCommands(event).isdisjoint(func['commands']) or ('any' in func['commands'] and len(self.getCommands(event)) > 0):
                         func['func'](event)
                         break
                 if event['type'] in func['types'] or 'any' in func['types']:
