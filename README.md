@@ -26,7 +26,7 @@ from mytelegramlib import *
 bot = TelegramBot('TOKEN')
 
 
-@bot.onMessage(content_type=['text'])
+@bot.eventHendler(content_type=['text'])
 def messaageHendler(event):
     bot.method('sendMessage', {
             'chat_id': event['message']['chat']['id'],
