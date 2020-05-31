@@ -33,6 +33,7 @@ class TelegramBot:
 
     def getUpdates(self):
         last_update = 0
+        time.sleep(0.1)
         while True:
             for event in self.method('getUpdates', {'offset': last_update}):
                 event['type'] = self.getEventType(event)
@@ -84,7 +85,6 @@ class TelegramBot:
         return commands
 
     def polling(self):
-
         for event in self.getUpdates():
             for func in self.functions:
                 if event['type'] == 'callback_query':
@@ -155,7 +155,7 @@ class InlineKeyboardMarkup:
     def clearMarkup(self):
         self.object['inline_keyboard'] = [[]]
 
-class MarkupContainer:
+class Markup:
     def __init__(self, **kwargs):
         self.object = kwargs
 
