@@ -13,14 +13,14 @@ class TelegramBot:
     def method(self, name: str, params=None):
         try:
             response = requests.get(self.URl + self.TOKEN + name, params=params)
-            if response.json()['ok']:
-                return response.json()['result']
-            print(response.json())
-            raise Exception('server return a non "ok" status')
-        except requests.exceptions.ConnectionError as e:
+        except Exception as e:
             print(e)
             time.sleep(3)
-            self.method(name, params)
+            return []
+        if response.json()['ok']:
+            return response.json()['result']
+        print(response.json())
+        raise Exception('server return a non "ok" status')
 
     def downloadFile(self, file_id, file_name):
         file = self.method('getFile', {
@@ -84,6 +84,7 @@ class TelegramBot:
         return commands
 
     def polling(self):
+
         for event in self.getUpdates():
             for func in self.functions:
                 if event['type'] == 'callback_query':
