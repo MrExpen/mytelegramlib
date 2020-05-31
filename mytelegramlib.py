@@ -33,7 +33,7 @@ class TelegramBot:
 
     def getUpdates(self):
         last_update = 0
-        time.sleep(0.1)
+        time.sleep(0.2)
         while True:
             for event in self.method('getUpdates', {'offset': last_update}):
                 event['type'] = self.getEventType(event)
