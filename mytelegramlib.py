@@ -1,7 +1,6 @@
 import requests
 import json
 import time
-# from requests import exception
 
 
 class TelegramBot:
@@ -16,7 +15,7 @@ class TelegramBot:
         except Exception as e:
             print(e)
             time.sleep(3)
-            return []
+            return self.method(name, params)
         if response.json()['ok']:
             return response.json()['result']
         print(response.json())
@@ -102,7 +101,7 @@ class TelegramBot:
 
     def eventHendler(self, content_types=[], commands=[], callback_datas=[]):
         def decorator(func):
-            self.functions.append({'func': func, 'types': content_types, 'commands':set(commands), 'callback_datas': callback_datas})
+            self.functions.append({'func': func, 'types': content_types, 'commands': set(commands), 'callback_datas': callback_datas})
             return func
         return decorator
 
